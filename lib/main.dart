@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:smalltask/cubit/cubit.dart';
+import 'package:smalltask/logincubit/cubit.dart';
 import 'package:smalltask/sharedpref/cache.dart';
 import 'cubit/bloc_observer.dart';
 import 'cubit/states.dart';
+import 'logincubit/states.dart';
 import 'modules/login.dart';
 void main()
 {
@@ -20,19 +22,22 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context)=>MyAppCubit()..createDatabase(),
-      child: BlocConsumer<MyAppCubit,AppCubitStates>(
-        builder:(context,state)=>MaterialApp(title: 'Notes App',
-            theme: ThemeData(primarySwatch:Colors.indigo),
-            debugShowCheckedModeBanner: false,
-            home: SplashScreen()
+    return MultiBlocProvider(providers:
+    [
+      BlocProvider(create: (context)=>MyAppCubit()..createDatabase(),),
+      BlocProvider(create: (context)=>NotesCubit())
+    ],
+        child: BlocConsumer<NotesCubit,AppStates>(
+          builder:(context,state)=>MaterialApp(title: 'Notes App',
+              theme: ThemeData(primarySwatch:Colors.indigo),
+              debugShowCheckedModeBanner: false,
+              home: SplashScreen()
 
-        ) ,
-        listener: (context,state){},
+          ) ,
+          listener: (context,state){},
 
-      ),
+    )
     );
-
   }
 }
 

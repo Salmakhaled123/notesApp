@@ -1,14 +1,15 @@
+import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:smalltask/cubit/states.dart';
 import 'package:sqflite/sqflite.dart';
-
 class MyAppCubit extends Cubit<AppCubitStates> {
   MyAppCubit() : super(AppCubitInitialState());
   static MyAppCubit get(context) => BlocProvider.of(context);
   List<Map> notes = [];
   late Database database;
-
   void createDatabase() {
     openDatabase('Notes.db', version: 1, onCreate: (database, version) {
       print('db created');
@@ -29,7 +30,6 @@ class MyAppCubit extends Cubit<AppCubitStates> {
       emit(NotesAppDbCreation());
     });
   }
-
   void insertToDatabase(
       {required String title,
       required String body,

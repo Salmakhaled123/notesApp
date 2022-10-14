@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:smalltask/cubit/cubit.dart';
 import 'package:smalltask/logincubit/cubit.dart';
 import 'package:smalltask/logincubit/states.dart';
 import 'package:smalltask/modules/notes_screen.dart';
 import 'package:smalltask/sharedpref/cache.dart';
 import '../components/components.dart';
 
-class LoginScreen extends StatelessWidget
-{
-  var emailController=TextEditingController();
-  var passwordController=TextEditingController();
-  var nameController=TextEditingController();
-  var formKey=GlobalKey<FormState>();
+class LoginScreen extends StatelessWidget {
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var nameController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-
-    return BlocProvider(
-      create: (context)=>NotesCubit(),
-      child: BlocConsumer<NotesCubit,AppStates>(
-        listener:(context,state){} ,
-        builder:(context,state){
+    return BlocConsumer<NotesCubit, AppStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -47,12 +45,116 @@ class LoginScreen extends StatelessWidget
                       SizedBox(
                         height: 30.0,
                       ),
+                      NotesCubit.get(context).image==null?
+                      Center(
+                        child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                child: Image.network(
+                                    'https://th.bing.com/th/id/OIP.zCVf_nKLETihGK7z3KPGfAHaHa?pid=ImgDet&rs=1'),
+                                radius: 60.0,
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            backgroundColor:
+                                                Colors.indigo.shade200,
+                                            title: Text('Choose '),
+                                            content: Column(
+                                                mainAxisSize:
+                                                    MainAxisSize.min,
+                                                children: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        NotesCubit.get(
+                                                                context)
+                                                            .uploadPhotoFromGallery();
+                                                      },
+                                                      child: Text(
+                                                          'Upload photo from gallery')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        NotesCubit.get(
+                                                                context)
+                                                            .uploadPhotoFromCamera();
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text(
+                                                          'take photo from camera'))
+                                                ]),
+                                          );
+                                        });
+                                  },
+                                  icon: Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Colors.indigo.shade200,
+                                  ))
+                            ]),
+                      ):
+                      Center(
+                        child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: FileImage(NotesCubit.get(context).image!),
+                                radius: 60.0,
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            backgroundColor:
+                                            Colors.indigo.shade200,
+                                            title: Text('Choose '),
+                                            content: Column(
+                                                mainAxisSize:
+                                                MainAxisSize.min,
+                                                children: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        NotesCubit.get(
+                                                            context)
+                                                            .uploadPhotoFromGallery();
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text(
+                                                          'Upload photo from gallery')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        NotesCubit.get(
+                                                            context)
+                                                            .uploadPhotoFromCamera();
+                                                        Navigator.of(context).pop();
 
+                                                      },
+                                                      child: Text(
+                                                          'take photo from camera'))
+                                                ]),
+                                          );
+                                        });
+                                  },
+                                  icon: Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Colors.indigo.shade200,
+                                  ))
+                            ]),
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
                       defaultTextField(
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(borderSide:  BorderSide(color: Colors.indigo.shade200),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.indigo.shade200),
                                   borderRadius: BorderRadius.circular(35))),
-                        validatemode: AutovalidateMode.onUserInteraction,
+                          validatemode: AutovalidateMode.onUserInteraction,
                           controller: nameController,
                           type: TextInputType.text,
                           prefix: Icons.person,
@@ -62,8 +164,11 @@ class LoginScreen extends StatelessWidget
                               return 'please enter your name';
                             }
                           }),
-                      SizedBox(height: 20.0,),
-                      defaultTextField(validatemode: AutovalidateMode.onUserInteraction,
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      defaultTextField(
+                          validatemode: AutovalidateMode.onUserInteraction,
                           controller: emailController,
                           type: TextInputType.emailAddress,
                           prefix: Icons.mail_outline,
@@ -76,55 +181,57 @@ class LoginScreen extends StatelessWidget
                       SizedBox(
                         height: 20,
                       ),
-                      defaultTextField(validatemode: AutovalidateMode.onUserInteraction,
+                      defaultTextField(
+                          validatemode: AutovalidateMode.onUserInteraction,
                           controller: passwordController,
-
                           type: TextInputType.visiblePassword,
                           prefix: Icons.lock,
                           label: 'password',
-                          validate: (value){
-                            if(value!.isEmpty)
-                              {
-                                return ' please enter your password';
-                              }
+                          validate: (value) {
+                            if (value!.isEmpty) {
+                              return ' please enter your password';
+                            }
                           },
                           suffix: NotesCubit.get(context).suffix,
-                          suffixpressed: ()
-                          {
+                          suffixpressed: () {
                             NotesCubit.get(context).ChangeVisibility();
-                          }
-                          ,obsecure: NotesCubit.get(context).isPassword
+                          },
+                          obsecure: NotesCubit.get(context).isPassword),
+                      SizedBox(
+                        height: 50.0,
                       ),
-                      SizedBox(height: 50.0,),
                       Center(
-                        child: Container(width: 150,
-                          decoration: BoxDecoration(color:Colors.indigo.shade200,
-                            borderRadius: BorderRadius.circular(35.0)),
+                        child: Container(
+                          width: 150,
+                          decoration: BoxDecoration(
+                              color: Colors.indigo.shade200,
+                              borderRadius: BorderRadius.circular(35.0)),
                           child: TextButton(
-                              onPressed: ()
-                          {
-                            if(formKey.currentState!.validate())
-                              {
-                                CacheHelper.savedata(key: 'Name', value: nameController.text);
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>NotesScreen()));
-                              }
-
-                          }, child: Text('Login',style: TextStyle(color: Colors.white,
-                          fontSize: 20),)),
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  CacheHelper.savedata(
+                                      key: 'Name',
+                                      value: nameController.text);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NotesScreen()));
+                                }
+                              },
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              )),
                         ),
                       )
-
                     ]),
               ),
             ),
           ),
         );
-        } ,
-
-      ),
+      },
     );
-
-
   }
 }
-
